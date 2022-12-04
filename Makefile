@@ -1,4 +1,4 @@
-.PHONY: build-objects test
+.PHONY: build-objects test clean
 
 OBJS=gluethread/gluethread.o \
 	graph.o
