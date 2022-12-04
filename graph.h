@@ -8,6 +8,7 @@
 typedef struct node_ node_t;
 typedef struct link_ link_t;
 typedef struct interface_ interface_t;
+typedef struct graph_ graph_t;
 
 /* Struct implementation */
 struct interface_ {
@@ -34,5 +35,11 @@ struct graph_ {
 };
 
 /* Functions to be implemented */
-static inline node_t* get_nbr_node(interface_t *interface);
-static inline int get_node_intf_available_slot(node_t *node);
+static inline node_t* getNeighborNode(interface_t *interface);
+static inline int getNodeInterfaceAvailableSlot(node_t *node);
+
+void InsertLinkBetweenTwoNodes(node_t *n1, node_t *n2, char *fromIFName, char *toIFNamem, unsigned int cost);
+
+graph_t* NewGraph(char *topologyName);
+
+node_t* InsertNode(graph_t *graph, char *nodeName);
