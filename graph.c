@@ -1,5 +1,18 @@
-#include<stdio.h>
 #include "graph.h"
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+// NewGraph returns the a graph that represents a topology
+graph_t* NewGraph(char *topologyName) {
+    graph_t *graph = malloc(sizeof(graph_t));
+    strncpy(graph->topology_name, topologyName, 32);
+    graph->topology_name[32] = '\0';
+
+    NewGLThread(&graph->node_list);
+    return graph;
+}
 
 // getNodeInterfaceAvailableSlot return the interface slot available
 static inline int getNodeInterfaceAvailableSlot(node_t *node) {
