@@ -35,12 +35,12 @@ struct graph_ {
     glthread_t node_list; // linked list
 };
 
-/* Functions to be implemented */
-static inline node_t* getNeighborNode(interface_t *interface);
-static inline int getNodeInterfaceAvailableSlot(node_t *node);
-
+/* Exported functions */
 void graph_InsertLinkBetweenTwoNodes(node_t *n1, node_t *n2, char *fromIFName, char *toIFNamem, unsigned int cost);
 
 graph_t* graph_New(char *topologyName);
 
 node_t* graph_InsertNode(graph_t *graph, char *nodeName);
+node_t* graph_GetNodeByName(graph_t *graph, char *nodeName);
+
+interface_t* graph_GetNodeIFByName(node_t *node, char *IFName);

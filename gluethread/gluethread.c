@@ -22,3 +22,11 @@ void gluethread_AddNext(glthread_t *source, glthread_t *new) {
     new->left = source;
     source->right = new;
 }
+
+// GetNext return the next item from the Doubly Linked List
+glthread_t* gluethread_GetNext(glthread_t *source) {
+    if (source == NULL) {
+        return NULL;
+    }
+    return source->right;
+}

@@ -4,6 +4,12 @@
 #include<stdlib.h>
 #include<string.h>
 
+/* Private functions */
+// static inline node_t* getNeighborNode(interface_t *interface);
+static inline int getNodeInterfaceAvailableSlot(node_t *node);
+static inline node_t* glthreadToNode(glthread_t *glthread);
+static void insertLinkIntoNode(link_t *link, interface_t *intf, node_t *node, char *IFName);
+
 // New returns the a graph that represents a topology
 graph_t* graph_New(char *topologyName) {
     graph_t *graph = malloc(sizeof(graph_t));
@@ -23,7 +29,51 @@ node_t* graph_InsertNode(graph_t *graph, char *nodeName) {
     node->node_name[NODE_NAME_SIZE - 1] = '\0';
 
     gluethread_NewGLThread(&node->graph_glue);
+    gluethread_AddNext(&graph->node_list, &node->graph_glue);
+    return node;
+}
 
+// InsertLinkBetweenTwoNodes insert and link two nodes by an interface
+void graph_InsertLinkBetweenTwoNodes(node_t *n1, node_t *n2, char *fromIFName, char *toIFNamem, unsigned int cost) {
+    link_t *link = malloc(sizeof(link_t));
+    link->cost = cost;
+
+    insertLinkIntoNode(link, &link->intf1, n1, fromIFName);
+    insertLinkIntoNode(link, &link->intf2, n2, toIFNamem);
+}
+
+// GetNodeIFByName find and return the local interface of a node by the name of the interface. When not found, return NULL
+interface_t* graph_GetNodeIFByName(node_t *node, char *IFName) {
+    int i;
+    for (i=0 ; i < MAX_INTF_PER_NODE ; i++) {
+        if (node->intf[i] == NULL) {
+            continue;
+        }
+        if (strcmp(node->intf[i]->if_name, IFName) == 0) {
+            return node->intf[i];
+        }
+    }
+    return NULL;
+}
+
+// GetNodeByName find and return a node by its name, otherwise, return NULL
+node_t* graph_GetNodeByName(graph_t *graph, char *nodeName) {
+    glthread_t *source;
+    node_t *node;
+
+    source = &graph->node_list;
+    while (source != NULL) {
+        node = glthreadToNode(source);
+        if (node->node_name == NULL) {
+            source = gluethread_GetNext(source);
+            continue;
+        }
+        if (strcmp(node->node_name, nodeName) == 0) {
+            return node;
+        }
+        source = gluethread_GetNext(source);
+    }
+    return NULL;
 }
 
 // getNodeInterfaceAvailableSlot return the interface slot available
@@ -37,21 +87,51 @@ static inline int getNodeInterfaceAvailableSlot(node_t *node) {
     return -1;
 }
 
-// getNeighborNode returns the neighbor node or NULL if there is no neighbor node.
-static inline node_t* getNeighborNode(interface_t *interface) {
-    if (interface == NULL) {
-        return NULL;
-    }
-    if (interface->att_node == NULL) {
-        return NULL;
-    }
-    if (interface->link == NULL) {
-        return NULL;
+// glthreadToNode transform a glthread into a node_t. if it is not possible, any field in node_t will be empty (or NULL if pointer)
+static inline node_t* glthreadToNode(glthread_t *glthread) {
+    char *glthreadOffset;
+    char *glthreadPointer;
+    char *nodePointer;
+
+    glthreadOffset = (char *)&((node_t *)NULL)->graph_glue;
+    glthreadPointer = (char *)(glthread);
+    nodePointer = (char *)(glthreadPointer - glthreadOffset);
+
+    node_t *node = (node_t *)nodePointer;
+    return node;
+}
+
+// insertLinkIntoNode it "plugs" an interface and a link into a node
+static void insertLinkIntoNode(link_t *link, interface_t *intf, node_t *node, char *IFName) {
+    int empty_slot = getNodeInterfaceAvailableSlot(node);
+    if (empty_slot == -1) {
+        fprintf(stdout, "Node: %s with no available slot.", node->node_name);
+        return;
     }
 
-    link_t *link = interface->link;
-    if (&link->intf1 == interface) {
-        return link->intf2.att_node;
-    }
-    return link->intf1.att_node;
+    intf->att_node = node;
+    strncpy(intf->if_name, IFName, IF_NAME_SIZE);
+    intf->if_name[IF_NAME_SIZE - 1] = '\0';
+    intf->link = link;
+
+    node->intf[empty_slot] = intf;
 }
+
+// getNeighborNode returns the neighbor node or NULL if there is no neighbor node.
+// static inline node_t* getNeighborNode(interface_t *interface) {
+//     if (interface == NULL) {
+//         return NULL;
+//     }
+//     if (interface->att_node == NULL) {
+//         return NULL;
+//     }
+//     if (interface->link == NULL) {
+//         return NULL;
+//     }
+
+//     link_t *link = interface->link;
+//     if (&link->intf1 == interface) {
+//         return link->intf2.att_node;
+//     }
+//     return link->intf1.att_node;
+// }
