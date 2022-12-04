@@ -20,15 +20,15 @@
 *    +-------+                                                +----------+
 */
 graph_t *FirstTopology() {
-    graph_t *topology = NewGraph("Generic Graph");
+    graph_t *topology = graph_New("Generic Graph");
 
-    node_t *R0_re = InsertNode(topology, "R0_re");
-    node_t *R1_re = InsertNode(topology, "R1_re");
-    node_t *R2_re = InsertNode(topology, "R2_re");
+    node_t *R0_re = graph_InsertNode(topology, "R0_re");
+    node_t *R1_re = graph_InsertNode(topology, "R1_re");
+    node_t *R2_re = graph_InsertNode(topology, "R2_re");
 
-    InsertLinkBetweenTwoNodes(R0_re, R1_re, "eth0/0", "eth0/1", 1);
-    InsertLinkBetweenTwoNodes(R1_re, R2_re, "eth0/2", "eth0/3", 1);
-    InsertLinkBetweenTwoNodes(R2_re, R0_re, "eth0/5", "eth0/4", 1);
+    graph_InsertLinkBetweenTwoNodes(R0_re, R1_re, "eth0/0", "eth0/1", 1);
+    graph_InsertLinkBetweenTwoNodes(R1_re, R2_re, "eth0/2", "eth0/3", 1);
+    graph_InsertLinkBetweenTwoNodes(R2_re, R0_re, "eth0/5", "eth0/4", 1);
 
     return topology;
 }

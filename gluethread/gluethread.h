@@ -7,4 +7,5 @@ struct _glthread {
     struct _glthread *right;
 };
 
-void NewGLThread(glthread_t *glthread);
+void gluethread_NewGLThread(glthread_t *glthread);
+void gluethread_AddNext(glthread_t *source, glthread_t *new);

@@ -17,7 +17,7 @@ int main() {
 }
 
 int TestNewGraph() {
-    graph_t *graph = NewGraph("Generic Graph");
+    graph_t *graph = graph_New("Generic Graph");
 
     if (strcmp(graph->topology_name, "Generic Graph") != 0) {
         fprintf(stderr, "unexpected topology name, receive '%s', wants 'Generic Graph'\n", graph->topology_name);

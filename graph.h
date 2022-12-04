@@ -1,6 +1,7 @@
 #include "gluethread/gluethread.h"
 
 #define NODE_NAME_SIZE 16
+#define TOPOLOGY_NAME_SIZE 32
 #define IF_NAME_SIZE 16
 #define MAX_INTF_PER_NODE 10
 
@@ -30,7 +31,7 @@ struct node_ {
 };
 
 struct graph_ {
-    char topology_name[32];
+    char topology_name[TOPOLOGY_NAME_SIZE];
     glthread_t node_list; // linked list
 };
 
@@ -38,8 +39,8 @@ struct graph_ {
 static inline node_t* getNeighborNode(interface_t *interface);
 static inline int getNodeInterfaceAvailableSlot(node_t *node);
 
-void InsertLinkBetweenTwoNodes(node_t *n1, node_t *n2, char *fromIFName, char *toIFNamem, unsigned int cost);
+void graph_InsertLinkBetweenTwoNodes(node_t *n1, node_t *n2, char *fromIFName, char *toIFNamem, unsigned int cost);
 
-graph_t* NewGraph(char *topologyName);
+graph_t* graph_New(char *topologyName);
 
-node_t* InsertNode(graph_t *graph, char *nodeName);
+node_t* graph_InsertNode(graph_t *graph, char *nodeName);

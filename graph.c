@@ -4,14 +4,26 @@
 #include<stdlib.h>
 #include<string.h>
 
-// NewGraph returns the a graph that represents a topology
-graph_t* NewGraph(char *topologyName) {
+// New returns the a graph that represents a topology
+graph_t* graph_New(char *topologyName) {
     graph_t *graph = malloc(sizeof(graph_t));
-    strncpy(graph->topology_name, topologyName, 32);
-    graph->topology_name[32] = '\0';
 
-    NewGLThread(&graph->node_list);
+    strncpy(graph->topology_name, topologyName, TOPOLOGY_NAME_SIZE);
+    graph->topology_name[TOPOLOGY_NAME_SIZE - 1] = '\0';
+
+    gluethread_NewGLThread(&graph->node_list);
     return graph;
+}
+
+// InsertNode insert a new node into the graph (topology) and return this node
+node_t* graph_InsertNode(graph_t *graph, char *nodeName) {
+    node_t *node = malloc(sizeof(node_t));
+
+    strncpy(node->node_name, nodeName, NODE_NAME_SIZE);
+    node->node_name[NODE_NAME_SIZE - 1] = '\0';
+
+    gluethread_NewGLThread(&node->graph_glue);
+
 }
 
 // getNodeInterfaceAvailableSlot return the interface slot available
