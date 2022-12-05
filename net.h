@@ -1,9 +1,8 @@
 #define IPV4_LENGTH 16
-#define MAC_ADDR_LENGTH 23
+#define MAC_ADDR_LENGTH 24
 
 /* Forward declaration */
 typedef struct node_ node_t;
-typedef struct interface_ interface_t;
 typedef struct graph_ graph_t;
 
 /* Forward declaration */
@@ -40,6 +39,6 @@ void net_SetEmptyInterfaceNetworkProperties(intf_net_prop_t *intfNetProps);
 void net_AssignMACAddr(intf_net_prop_t *intfProps);
 void net_DumpNetGraph(graph_t *graph);
 
-int net_SetLoopbackAddrNode(node_t *node, char *IPAddr);
+int net_SetLoopbackAddrNode(node_net_prop_t *nodeProps, char *IPAddr);
 int net_SetInterfaceIPAddrNode(node_t *node, char *localIF, char *IPAddr, char mask);
 int net_UnsetInterfaceIPAddrNode(node_t *node, char *localIF);

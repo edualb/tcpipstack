@@ -1,11 +1,13 @@
 #include "net.h"
 
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int TestSetEmptyNodeNetworkProperties();
 int TestSetEmptyInterfaceNetworkProperties();
 int TestAssignMACAddr();
+int TestSetLoopbackAddrNode();
 
 int main() {
     fprintf(stdout, "\n\nStarting Test net...\n");
@@ -36,6 +38,15 @@ int main() {
         exit(1);
     }
     fprintf(stdout, "TestAssignMACAddr: OK\n");
+
+    /* TestSetLoopbackAddrNode tests the following methods:
+    * net_SetLoopbackAddrNode
+    */
+    if (TestSetLoopbackAddrNode() != 0) {
+        fprintf(stderr, "TestSetLoopbackAddrNode: FAIL\n");
+        exit(1);
+    }
+    fprintf(stdout, "TestSetLoopbackAddrNode: OK\n");
 
     fprintf(stdout, "Test net done!\n");
     exit(0);
@@ -101,7 +112,7 @@ int TestAssignMACAddr() {
     char *mac = intfProps->mac.addr;
 
     int i;
-    for(i=0 ; i < MAC_ADDR_LENGTH ; i++) {
+    for(i=0 ; i < (MAC_ADDR_LENGTH - 1) ; i++) {
         if ((i+1) % 3 != 0) {
             continue;
         }
@@ -110,5 +121,39 @@ int TestAssignMACAddr() {
             return 1;
         }
     }
+    return 0;
+}
+
+int TestSetLoopbackAddrNode() {
+    int ok;
+    node_net_prop_t *netProps = malloc(sizeof(node_net_prop_t));
+    net_SetEmptyNodeNetworkProperties(netProps);
+
+    ok = net_SetLoopbackAddrNode(netProps, "");
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetLoopbackAddrNode response (with empty ip), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
+
+    ok = net_SetLoopbackAddrNode(netProps, NULL);
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetLoopbackAddrNode response (with NULL ip), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
+
+    ok = net_SetLoopbackAddrNode(netProps, "255.255.255.255");
+    if (!ok) {
+        fprintf(stderr, "unexpected net_SetLoopbackAddrNode response, receive '%d' , wants '1'\n", ok);
+        return 1;
+    }
+    if (!netProps->is_lo_available) {
+        fprintf(stderr, "unexpected loopback availability, receive '%d' , wants '1'\n", netProps->is_lo_available);
+        return 1;
+    }
+    if (strcmp(netProps->lo_ip.addr, "255.255.255.255") != 0) {
+        fprintf(stderr, "unexpected loopback ip address, receive '%s', wants '255.255.255.255'\n", netProps->lo_ip.addr);
+        return 1;
+    }
+
     return 0;
 }
