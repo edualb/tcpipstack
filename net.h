@@ -2,10 +2,6 @@
 #define MAC_ADDR_LENGTH 24
 
 /* Forward declaration */
-typedef struct node_ node_t;
-typedef struct graph_ graph_t;
-
-/* Forward declaration */
 typedef struct ip_add_ ip_add_t;
 typedef struct mac_add_ mac_add_t;
 typedef struct node_net_prop_ node_net_prop_t;
@@ -37,8 +33,8 @@ struct intf_net_prop_ {
 void net_SetEmptyNodeNetworkProperties(node_net_prop_t *nodeNetProps);
 void net_SetEmptyInterfaceNetworkProperties(intf_net_prop_t *intfNetProps);
 void net_AssignMACAddr(intf_net_prop_t *intfProps);
-void net_DumpNetGraph(graph_t *graph);
+void net_DumpNetProps(node_net_prop_t *nodeProps, intf_net_prop_t *intfProps);
 
 int net_SetLoopbackAddrNode(node_net_prop_t *nodeProps, char *IPAddr);
-int net_SetInterfaceIPAddrNode(node_t *node, char *localIF, char *IPAddr, char mask);
-int net_UnsetInterfaceIPAddrNode(node_t *node, char *localIF);
+int net_SetInterfaceIPAddr(intf_net_prop_t *intfProps, char *IPAddr, char mask);
+int net_UnsetInterfaceIPAddr(intf_net_prop_t *intfProps);

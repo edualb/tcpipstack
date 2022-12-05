@@ -8,6 +8,7 @@ int TestSetEmptyNodeNetworkProperties();
 int TestSetEmptyInterfaceNetworkProperties();
 int TestAssignMACAddr();
 int TestSetLoopbackAddrNode();
+int TestSetInterfaceIPAddr();
 
 int main() {
     fprintf(stdout, "\n\nStarting Test net...\n");
@@ -47,6 +48,16 @@ int main() {
         exit(1);
     }
     fprintf(stdout, "TestSetLoopbackAddrNode: OK\n");
+
+    /* TestSetInterfaceIPAddr tests the following methods:
+    * net_SetInterfaceIPAddr
+    * net_UnsetInterfaceIPAddr
+    */
+    if (TestSetInterfaceIPAddr() != 0) {
+        fprintf(stderr, "TestSetInterfaceIPAddr: FAIL\n");
+        exit(1);
+    }
+    fprintf(stdout, "TestSetInterfaceIPAddr: OK\n");
 
     fprintf(stdout, "Test net done!\n");
     exit(0);
@@ -140,6 +151,12 @@ int TestSetLoopbackAddrNode() {
         fprintf(stderr, "unexpected net_SetLoopbackAddrNode response (with NULL ip), receive '%d' , wants '0'\n", ok);
         return 1;
     }
+    
+    ok = net_SetLoopbackAddrNode(netProps, "255.255.255.255.255");
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetLoopbackAddrNode response (with big ip), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
 
     ok = net_SetLoopbackAddrNode(netProps, "255.255.255.255");
     if (!ok) {
@@ -152,6 +169,80 @@ int TestSetLoopbackAddrNode() {
     }
     if (strcmp(netProps->lo_ip.addr, "255.255.255.255") != 0) {
         fprintf(stderr, "unexpected loopback ip address, receive '%s', wants '255.255.255.255'\n", netProps->lo_ip.addr);
+        return 1;
+    }
+
+    return 0;
+}
+
+int TestSetInterfaceIPAddr() {
+    int ok, i;
+    intf_net_prop_t *intfProps = malloc(sizeof(intf_net_prop_t));
+    net_SetEmptyInterfaceNetworkProperties(intfProps);
+
+    ok = net_SetInterfaceIPAddr(intfProps, "", 24);
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetInterfaceIPAddr response (with empty ip), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
+
+    ok = net_SetInterfaceIPAddr(intfProps, NULL, 24);
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetInterfaceIPAddr response (with NULL ip), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
+    
+    ok = net_SetInterfaceIPAddr(intfProps, "255.255.255.255.255", 24);
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetInterfaceIPAddr response (with big ip), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
+
+    ok = net_SetInterfaceIPAddr(intfProps, "255.255.255.255", 33);
+    if (ok) {
+        fprintf(stderr, "unexpected net_SetInterfaceIPAddr response (with wrong mask value), receive '%d' , wants '0'\n", ok);
+        return 1;
+    }
+
+    ok = net_SetInterfaceIPAddr(intfProps, "255.255.255.255", 24);
+    if (!ok) {
+        fprintf(stderr, "unexpected net_SetInterfaceIPAddr response, receive '%d' , wants '1'\n", ok);
+        return 1;
+    }
+    if (!intfProps->is_ip_addr_available) {
+        fprintf(stderr, "unexpected ip address availability, receive '%d' , wants '1'\n", intfProps->is_ip_addr_available);
+        return 1;
+    }
+    if (strcmp(intfProps->ip.addr, "255.255.255.255") != 0) {
+        fprintf(stderr, "unexpected loopback ip address, receive '%s', wants '255.255.255.255'\n", intfProps->ip.addr);
+        return 1;
+    }
+
+    ok = net_UnsetInterfaceIPAddr(intfProps);
+    if (!ok) {
+        fprintf(stderr, "unexpected net_UnsetInterfaceIPAddr response, receive '%d' , wants '1'\n", ok);
+        return 1;
+    }
+    if (intfProps->is_ip_addr_available != 0) {
+        fprintf(stderr, "unexpected ip address availability when unset, receive '%d' , wants '1'\n", intfProps->is_ip_addr_available);
+        return 1;
+    }
+    if (intfProps->mask != 0) {
+        fprintf(stderr, "unexpected mask when unset, receive '%d' , wants '1'\n", intfProps->mask);
+        return 1;
+    }
+    for (i=0; i < IPV4_LENGTH ; i++) {
+        if (intfProps->ip.addr[i] == 0) {
+            continue;
+        }
+        fprintf(stderr, "unexpected ip address when unset, receive '%c' (IP address: %s) , wants '0'\n", intfProps->ip.addr[i], intfProps->ip.addr);
+        return 1;
+    }
+    for (i=0; i < MAC_ADDR_LENGTH ; i++) {
+        if (intfProps->mac.addr[i] == 0) {
+            continue;
+        }
+        fprintf(stderr, "unexpected mac address when unset, receive '%c' (IP address: %s) , wants '0'\n", intfProps->mac.addr[i], intfProps->mac.addr);
         return 1;
     }
 
