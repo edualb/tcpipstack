@@ -28,6 +28,8 @@ node_t* graph_InsertNode(graph_t *graph, char *nodeName) {
     strncpy(node->node_name, nodeName, NODE_NAME_SIZE);
     node->node_name[NODE_NAME_SIZE - 1] = '\0';
 
+    net_SetEmptyNodeNetworkProperties(&node->node_net_props);
+
     gluethread_NewGLThread(&node->graph_glue);
     gluethread_AddNext(&graph->node_list, &node->graph_glue);
     return node;
@@ -113,6 +115,8 @@ static void insertLinkIntoNode(link_t *link, interface_t *intf, node_t *node, ch
     strncpy(intf->if_name, IFName, IF_NAME_SIZE);
     intf->if_name[IF_NAME_SIZE - 1] = '\0';
     intf->link = link;
+    net_SetEmptyInterfaceNetworkProperties(&intf->intf_net_props);
+    net_AssignMACAddr(&intf->intf_net_props);
 
     node->intf[empty_slot] = intf;
 }

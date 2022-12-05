@@ -5,6 +5,7 @@
 
 int TestSetEmptyNodeNetworkProperties();
 int TestSetEmptyInterfaceNetworkProperties();
+int TestAssignMACAddr();
 
 int main() {
     fprintf(stdout, "\n\nStarting Test net...\n");
@@ -26,6 +27,15 @@ int main() {
         exit(1);
     }
     fprintf(stdout, "TestSetEmptyInterfaceNetworkProperties: OK\n");
+
+    /* TestAssignMACAddr tests the following methods:
+    * net_AssignMACAddr
+    */
+    if (TestAssignMACAddr() != 0) {
+        fprintf(stderr, "TestAssignMACAddr: FAIL\n");
+        exit(1);
+    }
+    fprintf(stdout, "TestAssignMACAddr: OK\n");
 
     fprintf(stdout, "Test net done!\n");
     exit(0);
@@ -82,5 +92,23 @@ int TestSetEmptyInterfaceNetworkProperties() {
         return 1;
     }
 
+    return 0;
+}
+
+int TestAssignMACAddr() {
+    intf_net_prop_t *intfProps = malloc(sizeof(intf_net_prop_t));
+    net_AssignMACAddr(intfProps);
+    char *mac = intfProps->mac.addr;
+
+    int i;
+    for(i=0 ; i < MAC_ADDR_LENGTH ; i++) {
+        if ((i+1) % 3 != 0) {
+            continue;
+        }
+        if (mac[i] != ':') {
+            fprintf(stderr, "unexpected mac address (missing colon), receive '%c' (MAC ADDRESS: %s), wants ':'\n", mac[i], mac);
+            return 1;
+        }
+    }
     return 0;
 }

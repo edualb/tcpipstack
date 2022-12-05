@@ -1,4 +1,5 @@
 #include "gluethread/gluethread.h"
+#include "net.h"
 
 #define NODE_NAME_SIZE 16
 #define TOPOLOGY_NAME_SIZE 32
@@ -16,6 +17,7 @@ struct interface_ {
     char if_name[IF_NAME_SIZE];
     struct node_ *att_node;
     struct link_ *link;
+    intf_net_prop_t intf_net_props;
 };
 
 struct link_ {
@@ -28,6 +30,7 @@ struct node_ {
     char node_name[NODE_NAME_SIZE];
     interface_t *intf[MAX_INTF_PER_NODE];
     glthread_t graph_glue; // linked list
+    node_net_prop_t node_net_props;
 };
 
 struct graph_ {

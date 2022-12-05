@@ -79,16 +79,28 @@ int TestGetNodeByName() {
         fprintf(stderr, "unexpected node name, receive '%s', wants 'Node 1'\n", n1->node_name);
         return 1;
     }
+    if (n1->node_net_props.is_lo_available) {
+        fprintf(stderr, "unexpected node loopback ip availability (Node 1), receive '%d', wants '0'\n", n1->node_net_props.is_lo_available);
+        return 1;
+    }
 
     node_t *n2 = graph_InsertNode(graph, "Node 2");
     if (strcmp(n2->node_name, "Node 2") != 0) {
         fprintf(stderr, "unexpected node name, receive '%s', wants 'Node 2'\n", n2->node_name);
         return 1;
     }
+    if (n2->node_net_props.is_lo_available) {
+        fprintf(stderr, "unexpected node loopback ip availability (Node 2), receive '%d', wants '0'\n", n2->node_net_props.is_lo_available);
+        return 1;
+    }
 
     node_t *n3 = graph_InsertNode(graph, "Node 3");
     if (strcmp(n3->node_name, "Node 3") != 0) {
         fprintf(stderr, "unexpected node name, receive '%s', wants 'Node 3'\n", n3->node_name);
+        return 1;
+    }
+    if (n3->node_net_props.is_lo_available) {
+        fprintf(stderr, "unexpected node loopback ip availability (Node 3), receive '%d', wants '0'\n", n3->node_net_props.is_lo_available);
         return 1;
     }
 
@@ -132,11 +144,15 @@ int TestGetNodeIFByName() {
         return 1;
     }
     if (strcmp(if_n1->if_name, "eth0/0") != 0) {
-        fprintf(stderr, "unexpected interface name, receive '%s', wants 'eth0/0'\n", if_n1->if_name);
+        fprintf(stderr, "unexpected interface[if_n1] name, receive '%s', wants 'eth0/0'\n", if_n1->if_name);
         return 1;
     }
     if (if_n1->att_node != n1) {
-        fprintf(stderr, "unexpected interface node attached, wants n1, got another one\n");
+        fprintf(stderr, "unexpected interface[if_n1] node attached, wants n1, got another one\n");
+        return 1;
+    }
+    if (if_n1->intf_net_props.is_ip_addr_available) {
+        fprintf(stderr, "unexpected interface[if_n1] properties ip availability, receive '%d', wants '0'\n", if_n1->intf_net_props.is_ip_addr_available);
         return 1;
     }
 
@@ -146,11 +162,15 @@ int TestGetNodeIFByName() {
         return 1;
     }
     if (strcmp(if_n2->if_name, "eth0/1") != 0) {
-        fprintf(stderr, "unexpected interface name, receive '%s', wants 'eth0/1'\n", if_n2->if_name);
+        fprintf(stderr, "unexpected interface[if_n2] name, receive '%s', wants 'eth0/1'\n", if_n2->if_name);
         return 1;
     }
     if (if_n2->att_node != n2) {
-        fprintf(stderr, "unexpected interface node attached, wants n2, got another one\n");
+        fprintf(stderr, "unexpected interface[if_n2] node attached, wants n2, got another one\n");
+        return 1;
+    }
+    if (if_n2->intf_net_props.is_ip_addr_available) {
+        fprintf(stderr, "unexpected interface[if_n2] properties ip availability, receive '%d', wants '0'\n", if_n2->intf_net_props.is_ip_addr_available);
         return 1;
     }
 
