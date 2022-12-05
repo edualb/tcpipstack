@@ -1,16 +1,24 @@
 .PHONY: build-objects test clean
 
 OBJS=gluethread/gluethread.o \
-	graph.o
+	graph.o \
+	net.o
+
+TEST_FILES_NAME=graph_test \
+	net_test
 
 test: build-objects
-	gcc -c -I . -I gluethread graph_test.c -o graph_test.o
-	gcc graph_test.o ${OBJS} -o graph_test
-	./graph_test
-	rm ./graph_test
+	for file_name in $(TEST_FILES_NAME); do \
+		gcc -c -I . -I gluethread $$file_name.c -o $$file_name.o; \
+		gcc $$file_name.o ${OBJS} -o $$file_name; \
+		./$$file_name; \
+		rm ./$$file_name; \
+	done
+
 
 build-objects:
 	gcc -c -I . graph.c -o graph.o
+	gcc -c -I . net.c -o net.o
 	gcc -c -I gluethread gluethread/gluethread.c -o gluethread/gluethread.o
 
 clean:
