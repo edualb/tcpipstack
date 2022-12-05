@@ -1,6 +1,6 @@
 #include "gluethread.h"
 
-#include<stdio.h>
+#include <stdio.h>
 
 // NewGLThread return an empty Doubly Linked List 
 void gluethread_NewGLThread(glthread_t *glthread) {

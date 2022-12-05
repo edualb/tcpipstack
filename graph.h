@@ -40,6 +40,7 @@ struct graph_ {
 
 /* Exported functions */
 void graph_InsertLinkBetweenTwoNodes(node_t *n1, node_t *n2, char *fromIFName, char *toIFNamem, unsigned int cost);
+void graph_GraphDump(graph_t *graph);
 
 graph_t* graph_New(char *topologyName);
 

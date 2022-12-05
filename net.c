@@ -18,20 +18,21 @@ void net_SetEmptyInterfaceNetworkProperties(intf_net_prop_t *intfProps) {
     memset(intfProps->ip.addr, 0, IPV4_LENGTH);
 }
 
-// DumpNetProps prints all information from an interface and node network properties
-void net_DumpNetProps(node_net_prop_t *nodeProps, intf_net_prop_t *intfProps) {
+// DumpNodeNetProps prints all information from an interface and node network properties
+void net_DumpNodeNetProps(node_net_prop_t *nodeProps, char *prefix) {
     if (nodeProps->is_lo_available) {
-        fprintf(stdout, "Loopback ip address: %s\n", nodeProps->lo_ip.addr);
+        fprintf(stdout, "%sLoopback ip address: %s\n", prefix, nodeProps->lo_ip.addr);
     } else {
-        fprintf(stdout, "Loopback ip address not available\n");
+        fprintf(stdout, "%sLoopback ip address not available\n", prefix);
     }
-    
-    fprintf(stdout, "MAC address: %s\n", intfProps->mac.addr);
-    
+}
+
+// DumpInterfaceNetProps prints all information from an interface and node network properties
+void net_DumpInterfaceNetProps(intf_net_prop_t *intfProps, char *prefix) {
     if (intfProps->is_ip_addr_available) {
-        fprintf(stdout, "Interface ip address: %s\n", intfProps->ip.addr);
+        fprintf(stdout, "%sMAC address: %s | Interface ip address: %s/%d\n", prefix, intfProps->mac.addr, intfProps->ip.addr, intfProps->mask);
     } else {
-        fprintf(stdout, "Interface ip address not available\n");
+        fprintf(stdout, "%sMAC address: %s | Interface ip address not available\n", prefix, intfProps->mac.addr);
     }
 }
 

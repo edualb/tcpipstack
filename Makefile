@@ -1,4 +1,4 @@
-.PHONY: build-objects test clean
+.PHONY: build-objects test clean print-topology
 
 OBJS=gluethread/gluethread.o \
 	graph.o \
@@ -14,6 +14,12 @@ test: build-objects
 		./$$file_name; \
 		rm ./$$file_name; \
 	done
+
+print-topology: build-objects
+	gcc -c -I . -I gluethread topologies.c -o topologies.o
+	gcc topologies.o ${OBJS} -o topologies
+	./topologies
+	rm ./topologies
 
 
 build-objects:
