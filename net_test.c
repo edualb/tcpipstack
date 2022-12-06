@@ -6,6 +6,7 @@
 
 int TestSetEmptyNodeNetworkProperties();
 int TestSetEmptyInterfaceNetworkProperties();
+int TestSetBroadcastMACAddr();
 int TestAssignMACAddr();
 int TestSetLoopbackAddrNode();
 int TestSetInterfaceIPAddr();
@@ -30,6 +31,15 @@ int main() {
         exit(1);
     }
     fprintf(stdout, "TestSetEmptyInterfaceNetworkProperties: OK\n");
+
+    /* TestSetBroadcastMACAddr tests the following methods:
+    * net_SetBroadcastMACAddr
+    */
+    if (TestSetBroadcastMACAddr() != 0) {
+        fprintf(stderr, "TestSetBroadcastMACAddr: FAIL\n");
+        exit(1);
+    }
+    fprintf(stdout, "TestSetBroadcastMACAddr: OK\n");
 
     /* TestAssignMACAddr tests the following methods:
     * net_AssignMACAddr
@@ -114,6 +124,21 @@ int TestSetEmptyInterfaceNetworkProperties() {
         return 1;
     }
 
+    return 0;
+}
+
+int TestSetBroadcastMACAddr() {
+    intf_net_prop_t *intfProps = malloc(sizeof(intf_net_prop_t));
+    net_SetBroadcastMACAddr(intfProps);
+    unsigned char *mac = intfProps->mac.addr;
+    int i;
+    for(i=0 ; i < MAC_ADDR_LENGTH ; i++) {
+        if (mac[i] == 0xFF) {
+            continue;
+        }
+        fprintf(stderr, "unexpected mac address in byte %d, receive '%02hhX', wants 'FF'\n", i, mac[i]);
+        return 1;
+    }
     return 0;
 }
 

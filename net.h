@@ -13,7 +13,7 @@ struct ip_add_ {
 };
 
 struct mac_add_ {
-    char addr[MAC_ADDR_LENGTH];
+    unsigned char addr[MAC_ADDR_LENGTH];
 };
 
 struct node_net_prop_ {
@@ -33,6 +33,7 @@ struct intf_net_prop_ {
 void net_SetEmptyNodeNetworkProperties(node_net_prop_t *nodeNetProps);
 void net_SetEmptyInterfaceNetworkProperties(intf_net_prop_t *intfNetProps);
 void net_AssignMACAddr(intf_net_prop_t *intfProps);
+void net_SetBroadcastMACAddr(intf_net_prop_t *intfProps);
 void net_DumpNodeNetProps(node_net_prop_t *nodeProps, char *prefix);
 void net_DumpInterfaceNetProps(intf_net_prop_t *intfProps, char *prefix);
 

@@ -105,7 +105,7 @@ int net_UnsetInterfaceIPAddr(intf_net_prop_t *intfProps) {
 
 // AssignMACAddr assign a random value to MAC Address
 void net_AssignMACAddr(intf_net_prop_t *intfProps) {
-    char *mac = intfProps->mac.addr;
+    unsigned char *mac = intfProps->mac.addr;
     memset(mac, 0, sizeof(mac));
 
     if (!is_seeded) {
@@ -117,8 +117,17 @@ void net_AssignMACAddr(intf_net_prop_t *intfProps) {
 
     // cast the random value into char* and set this information into the mac address. More information:
     // https://stackoverflow.com/questions/2733960/pointer-address-type-casting
-    char *valueIntoChar = (char *)&value;
+    unsigned char *valueIntoChar = (unsigned char *)&value;
     memcpy(mac, valueIntoChar, sizeof(unsigned int));
+}
+
+// SetBroadcastMACAddr assign the Broadcast value to MAC Address (FF:FF:FF:FF:FF:FF)
+void net_SetBroadcastMACAddr(intf_net_prop_t *intfProps) {
+    unsigned char *mac = intfProps->mac.addr;
+    int i;
+    for (i = 0 ; i < MAC_ADDR_LENGTH ; i++) {
+        mac[i] = 0xFF;
+    }
 }
 
 // randomValue returns a random value from 0 to 4294967295;
