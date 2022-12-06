@@ -123,14 +123,19 @@ int TestAssignMACAddr() {
     char *mac = intfProps->mac.addr;
 
     int i;
-    for(i=0 ; i < (MAC_ADDR_LENGTH - 1) ; i++) {
-        if ((i+1) % 3 != 0) {
-            continue;
-        }
-        if (mac[i] != ':') {
-            fprintf(stderr, "unexpected mac address (missing colon), receive '%c' (MAC ADDRESS: %s), wants ':'\n", mac[i], mac);
+    for(i=0 ; i < MAC_ADDR_LENGTH ; i++) {
+        if (i == 4 || i == 5) {
+            if (mac[i] == 0) {
+                continue;
+            };
+            fprintf(stderr, "unexpected mac address in byte %d, receive '%d', wants '0'\n", i, mac[i]);
             return 1;
         }
+        if (mac[i] != 0) {
+            continue;
+        }
+        fprintf(stderr, "unexpected mac address in byte %d, receive '0', wants non zero value '0'\n", i);
+        return 1;
     }
     return 0;
 }

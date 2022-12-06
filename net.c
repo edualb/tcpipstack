@@ -3,6 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <limits.h>
+#include <time.h>
+
+// Global variables
+int is_seeded = 0;
+
+// Private functions
+unsigned int randomValue();
 
 // SetEmptyNodeNetworkProperties set empty values into interface network properties
 void net_SetEmptyNodeNetworkProperties(node_net_prop_t *nodeProps) {
@@ -29,10 +37,13 @@ void net_DumpNodeNetProps(node_net_prop_t *nodeProps, char *prefix) {
 
 // DumpInterfaceNetProps prints all information from an interface and node network properties
 void net_DumpInterfaceNetProps(intf_net_prop_t *intfProps, char *prefix) {
+    char *mac = intfProps->mac.addr;
+    char macAddress[19];
+    sprintf(macAddress, "%02hhX:%02hhX:%02hhX:%02hhX:%02hhX:%02hhX%c", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5], '\0');
     if (intfProps->is_ip_addr_available) {
-        fprintf(stdout, "%sMAC address: %s | Interface ip address: %s/%d\n", prefix, intfProps->mac.addr, intfProps->ip.addr, intfProps->mask);
+        fprintf(stdout, "%sMAC address: %s | Interface ip address: %s/%d\n", prefix, macAddress, intfProps->ip.addr, intfProps->mask);
     } else {
-        fprintf(stdout, "%sMAC address: %s | Interface ip address not available\n", prefix, intfProps->mac.addr);
+        fprintf(stdout, "%sMAC address: %s | Interface ip address not available\n", prefix, macAddress);
     }
 }
 
@@ -95,16 +106,22 @@ int net_UnsetInterfaceIPAddr(intf_net_prop_t *intfProps) {
 // AssignMACAddr assign a random value to MAC Address
 void net_AssignMACAddr(intf_net_prop_t *intfProps) {
     char *mac = intfProps->mac.addr;
-
     memset(mac, 0, sizeof(mac));
-    int i;
-    for (i=0 ; i < (MAC_ADDR_LENGTH - 1) ; i++) {
-        if ((i+1) % 3 == 0) {
-            mac[i]=':';
-            continue;
-        }
-        char randomletter = "12ABC34DEF56GHI78JKL90MNOPQRSTUVWXYZ"[random () % 36];
-        mac[i]=randomletter;
+
+    if (!is_seeded) {
+        srand(time(NULL));
+        is_seeded = 1;
     }
-    mac[MAC_ADDR_LENGTH - 1] = '\0';
+    // get random value from 0 to 4294967295
+    unsigned int value = randomValue();
+
+    // cast the random value into char* and set this information into the mac address. More information:
+    // https://stackoverflow.com/questions/2733960/pointer-address-type-casting
+    char *valueIntoChar = (char *)&value;
+    memcpy(mac, valueIntoChar, sizeof(unsigned int));
+}
+
+// randomValue returns a random value from 0 to 4294967295;
+unsigned int randomValue() {
+    return (unsigned int)(rand() % (UINT_MAX)) + 1;
 }

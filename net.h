@@ -1,5 +1,5 @@
 #define IPV4_LENGTH 16
-#define MAC_ADDR_LENGTH 24
+#define MAC_ADDR_LENGTH 6
 
 /* Forward declaration */
 typedef struct ip_add_ ip_add_t;

@@ -37,30 +37,30 @@ Node name: R2_re
    Loopback ip address: 122.1.1.2
 Interface Name: eth0/3
    Local Node: R2_re | Neighbot Node: R1_re | Link Cost: 1
-   MAC address: 6U:T5:LE:EF:II:CH:XF:W7 | Interface ip address: 30.1.1.2
+   MAC address: 6U:T5:LE:EF:II:CH:XF:W7 | Interface ip address: 30.1.1.2/24
 Interface Name: eth0/5
    Local Node: R2_re | Neighbot Node: R0_re | Link Cost: 1
-   MAC address: 9J:Y0:HT:1R:KF:A7:AW:7I | Interface ip address: 40.1.1.2
+   MAC address: 9J:Y0:HT:1R:KF:A7:AW:7I | Interface ip address: 40.1.1.2/24
 
 
 Node name: R1_re
    Loopback ip address: 122.1.1.1
 Interface Name: eth0/1
    Local Node: R1_re | Neighbot Node: R0_re | Link Cost: 1
-   MAC address: OK:8S:ZE:7X:QQ:QV:LL:3K | Interface ip address: 20.1.1.2
+   MAC address: OK:8S:ZE:7X:QQ:QV:LL:3K | Interface ip address: 20.1.1.2/24
 Interface Name: eth0/2
    Local Node: R1_re | Neighbot Node: R2_re | Link Cost: 1
-   MAC address: KU:3B:28:VY:XF:F6:WH:I9 | Interface ip address: 30.1.1.1
+   MAC address: KU:3B:28:VY:XF:F6:WH:I9 | Interface ip address: 30.1.1.1/24
 
 
 Node name: R0_re
    Loopback ip address: 122.1.1.0
 Interface Name: eth0/0
    Local Node: R0_re | Neighbot Node: R1_re | Link Cost: 1
-   MAC address: LY:FD:3D:5G:X2:IV:ID:NM | Interface ip address: 20.1.1.1
+   MAC address: LY:FD:3D:5G:X2:IV:ID:NM | Interface ip address: 20.1.1.1/24
 Interface Name: eth0/4
    Local Node: R0_re | Neighbot Node: R2_re | Link Cost: 1
-   MAC address: DO:OQ:WG:76:QL:OO:E1:LS | Interface ip address: 40.1.1.1
+   MAC address: DO:OQ:WG:76:QL:OO:E1:LS | Interface ip address: 40.1.1.1/24
 */
 ```
 
