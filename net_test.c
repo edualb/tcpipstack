@@ -10,6 +10,7 @@ int TestSetBroadcastMACAddr();
 int TestAssignMACAddr();
 int TestSetLoopbackAddrNode();
 int TestSetInterfaceIPAddr();
+int TestApplyMask();
 
 int main() {
     fprintf(stdout, "\n\nStarting Test net...\n");
@@ -68,6 +69,16 @@ int main() {
         exit(1);
     }
     fprintf(stdout, "TestSetInterfaceIPAddr: OK\n");
+
+    /* TestSetInterfaceIPAddr tests the following methods:
+    * net_ApplyMask
+    * cpu_IsBigEndian
+    */
+    if (TestApplyMask() != 0) {
+        fprintf(stderr, "TestApplyMask: FAIL\n");
+        exit(1);
+    }
+    fprintf(stdout, "TestApplyMask: OK\n");
 
     fprintf(stdout, "Test net done!\n");
     exit(0);
@@ -276,5 +287,25 @@ int TestSetInterfaceIPAddr() {
         return 1;
     }
 
+    return 0;
+}
+
+int TestApplyMask() {
+    char *IP = "122.1.1.1";
+    char mask = 24;
+
+    // We can't use 'char *IPWithMask; or char *IPWithMask = "";' because it is a string literal, and string literal can't be modified.
+    // more information here: https://www.tutorialspoint.com/what-are-string-literals-in-c-language
+    // If we want to send a modified char* we can use one of the follwing methods:
+    //
+    // - char *IPWithMask = malloc(IPV4_LENGTH * sizeof(char));
+    // - char IPWithMask[IPV4_LENGTH];
+    char *IPWithMask = malloc(IPV4_LENGTH * sizeof(char));
+
+    net_ApplyMask(IP, IPWithMask, mask);
+    if (strcmp(IPWithMask, "122.1.1.0") != 0) {
+        fprintf(stderr, "unexpected ip with mask, receive '%s' , wants '122.1.1.0'\n", IPWithMask);
+        return 1;
+    }
     return 0;
 }

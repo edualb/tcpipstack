@@ -1,10 +1,13 @@
 #include "net.h"
+#include "cpu.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <limits.h>
 #include <time.h>
+#include <stdint.h>
+#include <arpa/inet.h> 
 
 // Global variables
 int is_seeded = 0;
@@ -108,10 +111,6 @@ void net_AssignMACAddr(intf_net_prop_t *intfProps) {
     unsigned char *mac = intfProps->mac.addr;
     memset(mac, 0, sizeof(mac));
 
-    if (!is_seeded) {
-        srand(time(NULL));
-        is_seeded = 1;
-    }
     // get random value from 0 to 4294967295
     unsigned int value = randomValue();
 
@@ -130,7 +129,50 @@ void net_SetBroadcastMACAddr(intf_net_prop_t *intfProps) {
     }
 }
 
+void net_ApplyMask(char *from, char *to, char mask) {
+    int i;
+    uint32_t binaryIP = 0;
+    uint32_t binaryMask;
+
+    if (mask == 32) {
+        strncpy(from, to, IPV4_LENGTH);
+        to[IPV4_LENGTH - 1] = '\0';
+        return;
+    }
+
+    if (cpu_IsBigEndian()) {
+        // The representation when Big Endian and mask = 24 will be: 0xFFFFFF00 but in the memory is 00 FF FF FF
+        binaryMask = 0xFFFFFFFF << (32 - mask);
+    } else {
+        // The representation when Little Endian and mask = 24 will be: 0x00FFFFFF but in the memory is FF FF FF 00
+        binaryMask = 0xFFFFFFFF >> (32 - mask);
+    }
+
+    inet_pton(AF_INET, from, &binaryIP);
+    for (i=0 ; i < sizeof(uint32_t) ; i++) {
+        /* When IP: 122.1.1.1, the bytes is 0101017A but the representation will be different depending on the order:
+        Big Endian: 01 01 01 7A
+        Little Endian: 7A 01 01 01
+
+        If we get the example of the Little Endian, we will get these values in bytes:
+        Mask: FF FF FF 00
+        IP: 7A 01 01 01
+
+        If we apply the AND operator in each byte, we will get the following mask:
+        Mask applied: 7A 01 01 00 (122.1.1.0)
+        */
+        unsigned char *byteIP = ((unsigned char *)&binaryIP);
+        unsigned char *byteMask = ((unsigned char *)&binaryMask);
+        byteIP[i] = byteIP[i] & byteMask[i];
+    }
+    inet_ntop(AF_INET, &binaryIP, to, IPV4_LENGTH);
+}
+
 // randomValue returns a random value from 0 to 4294967295;
 unsigned int randomValue() {
+    if (!is_seeded) {
+        srand(time(NULL));
+        is_seeded = 1;
+    }
     return (unsigned int)(rand() % (UINT_MAX)) + 1;
 }

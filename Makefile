@@ -2,7 +2,8 @@
 
 OBJS=gluethread/gluethread.o \
 	graph.o \
-	net.o
+	net.o \
+	cpu.o
 
 TEST_FILES_NAME=graph_test \
 	net_test
@@ -25,6 +26,7 @@ print-topology: build-objects
 build-objects:
 	gcc -c -I . graph.c -o graph.o
 	gcc -c -I . net.c -o net.o
+	gcc -c -I . cpu.c -o cpu.o
 	gcc -c -I gluethread gluethread/gluethread.c -o gluethread/gluethread.o
 
 clean:
