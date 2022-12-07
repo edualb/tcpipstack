@@ -48,3 +48,4 @@ node_t* graph_InsertNode(graph_t *graph, char *nodeName);
 node_t* graph_GetNodeByName(graph_t *graph, char *nodeName);
 
 interface_t* graph_GetNodeIFByName(node_t *node, char *IFName);
+interface_t* graph_GetIFSubnettedWithIP(node_t *node, char *IPAddr);

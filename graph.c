@@ -74,12 +74,38 @@ graph_t* graph_New(char *topologyName) {
 // GetNodeIFByName find and return the local interface of a node by the name of the interface. When not found, return NULL
 interface_t* graph_GetNodeIFByName(node_t *node, char *IFName) {
     int i;
-    for (i=0 ; i < MAX_INTF_PER_NODE ; i++) {
+    for (i = 0 ; i < MAX_INTF_PER_NODE ; i++) {
         if (node->intf[i] == NULL) {
             continue;
         }
         if (strcmp(node->intf[i]->if_name, IFName) == 0) {
             return node->intf[i];
+        }
+    }
+    return NULL;
+}
+
+// GetIFSubnettedWithIP returns the interface that shares the same subnet of IPAddr. In case of don't matches, it returns NULL
+interface_t* graph_GetIFSubnettedWithIP(node_t *node, char *IPAddr) {
+    int i;
+    for (i = 0 ; i < MAX_INTF_PER_NODE ; i++) {
+        interface_t *intf = node->intf[i];
+        if (intf == NULL) {
+            continue;
+        }
+        if(!intf->intf_net_props.is_ip_addr_available) {
+            continue;
+        }
+
+        char mask = intf->intf_net_props.mask;
+        char intfIPMask[IPV4_LENGTH];
+        net_ApplyMask(intf->intf_net_props.ip.addr, intfIPMask, mask);
+
+        char IPMask[IPV4_LENGTH];
+        net_ApplyMask(IPAddr, IPMask, mask);
+
+        if (strcmp(intfIPMask, IPMask) == 0) {
+            return intf;
         }
     }
     return NULL;
