@@ -129,14 +129,26 @@ void net_SetBroadcastMACAddr(intf_net_prop_t *intfProps) {
     }
 }
 
-void net_ApplyMask(char *from, char *to, char mask) {
+int net_IsMACBroadcast(intf_net_prop_t *intfProps) {
+    unsigned char *mac = intfProps->mac.addr;
+    for (int i = 0 ; i < MAC_ADDR_LENGTH ; i++) {
+        if (mac[i] == 0xFF) {
+            continue;
+        }
+        return 0;
+    }
+    return 1;
+}
+
+// ApplyMask
+void net_ApplyMask(char *fromIP, char *toIP, char mask) {
     int i;
     uint32_t binaryIP = 0;
     uint32_t binaryMask;
 
     if (mask == 32) {
-        strncpy(from, to, IPV4_LENGTH);
-        to[IPV4_LENGTH - 1] = '\0';
+        strncpy(fromIP, toIP, IPV4_LENGTH);
+        toIP[IPV4_LENGTH - 1] = '\0';
         return;
     }
 
@@ -148,7 +160,7 @@ void net_ApplyMask(char *from, char *to, char mask) {
         binaryMask = 0xFFFFFFFF >> (32 - mask);
     }
 
-    inet_pton(AF_INET, from, &binaryIP);
+    inet_pton(AF_INET, fromIP, &binaryIP);
     for (i=0 ; i < sizeof(uint32_t) ; i++) {
         /* When IP: 122.1.1.1, the bytes is 0101017A but the representation will be different depending on the order:
         Big Endian: 01 01 01 7A
@@ -165,7 +177,7 @@ void net_ApplyMask(char *from, char *to, char mask) {
         unsigned char *byteMask = ((unsigned char *)&binaryMask);
         byteIP[i] = byteIP[i] & byteMask[i];
     }
-    inet_ntop(AF_INET, &binaryIP, to, IPV4_LENGTH);
+    inet_ntop(AF_INET, &binaryIP, toIP, IPV4_LENGTH);
 }
 
 // randomValue returns a random value from 0 to 4294967295;

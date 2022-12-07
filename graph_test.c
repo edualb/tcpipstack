@@ -17,7 +17,7 @@ int main() {
         fprintf(stderr, "TestNewGraph: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestNewGraph: OK\n");
+    fprintf(stdout, "\tTestNewGraph: OK\n");
 
     /* TestGetNodeByName tests the following methods:
     * graph_New
@@ -28,7 +28,7 @@ int main() {
         fprintf(stderr, "TestGetNodeByName: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestGetNodeByName: OK\n");
+    fprintf(stdout, "\tTestGetNodeByName: OK\n");
 
     /* TestGetNodeIFByName tests the following methods:
     * graph_New
@@ -40,7 +40,7 @@ int main() {
         fprintf(stderr, "TestGetNodeIFByName: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestGetNodeIFByName: OK\n");
+    fprintf(stdout, "\tTestGetNodeIFByName: OK\n");
 
     fprintf(stdout, "Test graph done!\n");
     exit(0);

@@ -36,8 +36,9 @@ void net_AssignMACAddr(intf_net_prop_t *intfProps);
 void net_SetBroadcastMACAddr(intf_net_prop_t *intfProps);
 void net_DumpNodeNetProps(node_net_prop_t *nodeProps, char *prefix);
 void net_DumpInterfaceNetProps(intf_net_prop_t *intfProps, char *prefix);
-void net_ApplyMask(char *from, char *to, char mask);
+void net_ApplyMask(char *fromIP, char *toIP, char mask);
 
 int net_SetLoopbackAddrNode(node_net_prop_t *nodeProps, char *IPAddr);
 int net_SetInterfaceIPAddr(intf_net_prop_t *intfProps, char *IPAddr, char mask);
 int net_UnsetInterfaceIPAddr(intf_net_prop_t *intfProps);
+int net_IsMACBroadcast(intf_net_prop_t *intfProps);

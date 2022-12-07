@@ -11,6 +11,7 @@ int TestAssignMACAddr();
 int TestSetLoopbackAddrNode();
 int TestSetInterfaceIPAddr();
 int TestApplyMask();
+int TestIsMACBroadcast();
 
 int main() {
     fprintf(stdout, "\n\nStarting Test net...\n");
@@ -22,7 +23,7 @@ int main() {
         fprintf(stderr, "TestSetEmptyNodeNetworkProperties: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestSetEmptyNodeNetworkProperties: OK\n");
+    fprintf(stdout, "\tTestSetEmptyNodeNetworkProperties: OK\n");
 
     /* TestSetEmptyInterfaceNetworkProperties tests the following methods:
     * net_SetEmptyInterfaceNetworkProperties
@@ -31,7 +32,7 @@ int main() {
         fprintf(stderr, "TestSetEmptyInterfaceNetworkProperties: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestSetEmptyInterfaceNetworkProperties: OK\n");
+    fprintf(stdout, "\tTestSetEmptyInterfaceNetworkProperties: OK\n");
 
     /* TestSetBroadcastMACAddr tests the following methods:
     * net_SetBroadcastMACAddr
@@ -40,7 +41,7 @@ int main() {
         fprintf(stderr, "TestSetBroadcastMACAddr: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestSetBroadcastMACAddr: OK\n");
+    fprintf(stdout, "\tTestSetBroadcastMACAddr: OK\n");
 
     /* TestAssignMACAddr tests the following methods:
     * net_AssignMACAddr
@@ -49,7 +50,7 @@ int main() {
         fprintf(stderr, "TestAssignMACAddr: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestAssignMACAddr: OK\n");
+    fprintf(stdout, "\tTestAssignMACAddr: OK\n");
 
     /* TestSetLoopbackAddrNode tests the following methods:
     * net_SetLoopbackAddrNode
@@ -58,7 +59,7 @@ int main() {
         fprintf(stderr, "TestSetLoopbackAddrNode: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestSetLoopbackAddrNode: OK\n");
+    fprintf(stdout, "\tTestSetLoopbackAddrNode: OK\n");
 
     /* TestSetInterfaceIPAddr tests the following methods:
     * net_SetInterfaceIPAddr
@@ -68,7 +69,7 @@ int main() {
         fprintf(stderr, "TestSetInterfaceIPAddr: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestSetInterfaceIPAddr: OK\n");
+    fprintf(stdout, "\tTestSetInterfaceIPAddr: OK\n");
 
     /* TestSetInterfaceIPAddr tests the following methods:
     * net_ApplyMask
@@ -78,7 +79,17 @@ int main() {
         fprintf(stderr, "TestApplyMask: FAIL\n");
         exit(1);
     }
-    fprintf(stdout, "TestApplyMask: OK\n");
+    fprintf(stdout, "\tTestApplyMask: OK\n");
+
+    /* TestIsMACBroadcast tests the following methods:
+    * net_ApplyMask
+    * cpu_IsBigEndian
+    */
+    if (TestIsMACBroadcast() != 0) {
+        fprintf(stderr, "TestIsMACBroadcast: FAIL\n");
+        exit(1);
+    }
+    fprintf(stdout, "\tTestIsMACBroadcast: OK\n");
 
     fprintf(stdout, "Test net done!\n");
     exit(0);
@@ -305,6 +316,27 @@ int TestApplyMask() {
     net_ApplyMask(IP, IPWithMask, mask);
     if (strcmp(IPWithMask, "122.1.1.0") != 0) {
         fprintf(stderr, "unexpected ip with mask, receive '%s' , wants '122.1.1.0'\n", IPWithMask);
+        return 1;
+    }
+    return 0;
+}
+
+int TestIsMACBroadcast() {
+    intf_net_prop_t *intfProps = malloc(sizeof(intf_net_prop_t));
+
+    net_AssignMACAddr(intfProps);
+    int isBroadcast = net_IsMACBroadcast(intfProps);
+    if (isBroadcast) {
+        unsigned char *mac = intfProps->mac.addr;
+        fprintf(stderr, "unexpected mac address, receive '%02hhX %02hhX %02hhX %02hhX %02hhX %02hhX' , wants not a broadcast\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        return 1;
+    }
+
+    net_SetBroadcastMACAddr(intfProps);
+    isBroadcast = net_IsMACBroadcast(intfProps);
+    if (!isBroadcast) {
+        unsigned char *mac = intfProps->mac.addr;
+        fprintf(stderr, "unexpected mac address, receive '%02hhX %02hhX %02hhX %02hhX %02hhX %02hhX' , wants 'FF FF FF FF FF FF'\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
         return 1;
     }
     return 0;
